@@ -1,21 +1,31 @@
 package lab1;
 
 
+import java.awt.Image;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
+
 
 public class Main
 {
+	//TODO
+	static final int img_w=660,img_h=800;
+	static final int window_w=img_w+340,window_h=img_h+40;
+	
 	static DirectedGraph graph=new DirectedGraph();
 	static boolean floydready=false;
 	static Set<Integer> getbridge(String word1,String word2)
@@ -67,11 +77,78 @@ public class Main
 		}
 		return ans;
 	}
+	static void outputjpg()
+	{
+		outputjpg(false);
+	}
+	static void outputjpg(boolean save_img)
+	{
+		try
+		{
+			String gvname="lab1_graph"+(int)(Math.random()*1000);
+			PrintWriter writer = new PrintWriter(""+gvname+".gv", "UTF-8");
+			writer.println("digraph "+gvname);
+			writer.println("{");
+			for(Map.Entry<Integer,StartPoint> i:Main.graph.startpoint.entrySet())
+			{
+				System.out.println("{"+Main.graph.wordof.get(i.getKey())+"}");
+				for(EndPoint j:i.getValue().endpoint)
+				{
+					System.out.println(Main.graph.wordof.get(j.index)+"["+j.weight+"]");
+					writer.print("    ");
+					writer.print(Main.graph.wordof.get(i.getKey()));
+					writer.print(" -> ");
+					writer.print(Main.graph.wordof.get(j.index));
+					writer.print(" [label=\"");
+					writer.print(j.weight);
+					writer.print("\",color=");
+					if(j.selected) writer.print("red");
+					else writer.print("black");
+					writer.println("]");
+				}
+				System.out.println();
+			}
+			writer.println("}");
+			writer.println();
+			writer.close();
+			try
+			{
+				//String filename=""+gvname+".jpg";
+				Runtime.getRuntime().exec("dot "+gvname+".gv -Tjpg -o "+gvname+".jpg").waitFor();
+				//Runtime.getRuntime().exec("del /f /q "+gvname+".gv").waitFor();
+				
+				//TODO
+				ImageIcon img=new ImageIcon(""+gvname+".jpg");
+				img.setImage(img.getImage().getScaledInstance(img_w,img_h,Image.SCALE_DEFAULT));
+				graph_label.setIcon(img);
+				//if(save_img) Runtime.getRuntime().exec("copy "+gvname+".jpg "+gvname+".jpg").waitFor();
+				//Runtime.getRuntime().exec("del /f /q "+gvname+".jpg").waitFor();
+			}
+			catch (InterruptedException e)
+			{
+				System.out.println("interrupted");
+			}
+		}
+		catch (IOException e1)
+		{
+			System.out.println("output failed.");
+		}
+	}
+	static JLabel graph_label=new JLabel();
 	public static void main(String args[])
 	{
+		try
+		{
+			Runtime.getRuntime().exec("dot -V");
+		}
+		catch (IOException e)
+		{
+			System.out.println("Package graphviz is required.");
+			return;
+		}
 		JFrame fr_main = new JFrame();
 		fr_main.setLayout(null);
-		fr_main.setSize(800,600);
+		fr_main.setSize(window_w,window_h);
 		fr_main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		fr_main.setLocationRelativeTo(null);
 		
@@ -90,6 +167,9 @@ public class Main
 		JButton button_output=new JButton("输出有向图");
 		button_output.setBounds(0,70,100,25);
 		fr_main.add(button_output);
+		JCheckBox check_save=new JCheckBox("并保存为文件");
+		check_save.setBounds(150,70,150,25);
+		fr_main.add(check_save);
 		
 		JLabel label_word1=new JLabel("word1:");
 		label_word1.setBounds(0,150,60,25);
@@ -132,7 +212,7 @@ public class Main
 		JTextField text_pathstart=new JTextField();
 		text_pathstart.setBounds(80,400,220,25);
 		fr_main.add(text_pathstart);
-		JLabel label_pathend=new JLabel("最短路起点：");
+		JLabel label_pathend=new JLabel("最短路终点：");
 		label_pathend.setBounds(0,430,80,25);
 		fr_main.add(label_pathend);
 		JTextField text_pathend=new JTextField();
@@ -155,15 +235,14 @@ public class Main
 		button_walk_stop.setBounds(100,540,100,25);
 		fr_main.add(button_walk_stop);
 		
-		JPanel panel=new JPanel();
-		panel.setBounds(320,20,460,560);
-		panel.setBackground(java.awt.Color.WHITE);
-		fr_main.add(panel);
+		//TODO
+		graph_label.setBounds(320,20,img_w,img_h);
+		fr_main.add(graph_label);
 		
 		ActionListener act_input=new InputGraph(text_input,label_input_message);
 		button_input.addActionListener(act_input);
 		
-		ActionListener act_output=new OutputGraph();
+		ActionListener act_output=new OutputGraph(check_save);
 		button_output.addActionListener(act_output);
 		
 		ActionListener act_bridge=new QueryBridge(text_word1, text_word2, text_word3);

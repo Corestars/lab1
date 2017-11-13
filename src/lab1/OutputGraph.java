@@ -2,23 +2,21 @@ package lab1;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Map;
+
+import javax.swing.JCheckBox;
 
 public class OutputGraph implements ActionListener
 {
+	JCheckBox check_save;
+	OutputGraph(JCheckBox save)
+	{
+		check_save=save;
+	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		for(Map.Entry<Integer,StartPoint> i:Main.graph.startpoint.entrySet())
-		{
-			System.out.println("{"+Main.graph.wordof.get(i.getKey())+"}");
-			for(EndPoint j:i.getValue().endpoint)
-			{
-				System.out.println(Main.graph.wordof.get(j.index)+"["+j.weight+"]");
-			}
-			System.out.println();
-		}
-		
+	public void actionPerformed(ActionEvent e)
+	{
+		Main.outputjpg(check_save.isSelected());
 	}
 
 }

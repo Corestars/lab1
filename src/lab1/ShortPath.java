@@ -19,7 +19,13 @@ public class ShortPath implements ActionListener
 	public void actionPerformed(ActionEvent e)
 	{
 		if(!Main.floydready) text_pathans.setText("未准备就绪");
-		Integer n1=Main.graph.indexof.get(text_pathstart.getText()),n2=Main.graph.indexof.get(text_pathend.getText());
+		String s1=text_pathstart.getText(),s2=text_pathend.getText();
+		Integer n1=Main.graph.indexof.get(s1),n2=Main.graph.indexof.get(s2);
+		if(s2.compareTo("")==0)
+		{
+			n2=(int)(Math.random()*Main.graph.indexof.size());
+			text_pathend.setText(Main.graph.wordof.get(n2));
+		}
 		if(n1==null||n2==null)
 		{
 			text_pathans.setText("单词不存在");
@@ -30,15 +36,16 @@ public class ShortPath implements ActionListener
 		else if(ans.size()==0) text_pathans.setText("无可选路径");
 		else
 		{
-			StringBuilder ans_str=new StringBuilder();
-			boolean first=true;
+			int lastnum=ans.peek();
 			while(!ans.isEmpty())
 			{
-				if(first) ans_str.append(Main.graph.wordof.get(ans.poll()));
-				else ans_str.append("->").append(Main.graph.wordof.get(ans.poll()));
-				first=false;
+				int num=ans.poll();
+				for(EndPoint i:Main.graph.startpoint.get(lastnum).endpoint) if(i.index==num) i.selected=true;
+				lastnum=num;
 			}
-			text_pathans.setText(ans_str.toString());
+			text_pathans.setText(""+Main.floyd_dis[n1][n2]);
+			Main.outputjpg();
+			new FlushGraph().run();
 		}
 	}
 }

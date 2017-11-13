@@ -20,20 +20,7 @@ public class InputGraph implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
-		Main.floydready=false;
-		Main.graph.clear();
-		String filename=text_input.getText();
-		try
-		{
-			Main.graph.readin(filename);
-			System.out.println("read finish");
-			label_input_message.setText("");
-		}
-		catch(IOException e1)
-		{
-			System.out.println("Error when reading file.");
-			label_input_message.setText("文件读取出错");
-		}
+		label_input_message.setText(readin.read(text_input.getText()));
 		new FloydInit().start();
 	}
 }

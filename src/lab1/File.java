@@ -25,7 +25,7 @@ public class File
 	{
 		StringBuilder re=new StringBuilder();
 		int c;
-
+		
 		while((c=fs.read())!=-1)
 		{
 			if((c>='A'&&c<='Z')||(c>='a'&&c<='z')) break;
@@ -39,5 +39,4 @@ public class File
 		}
 		return re.toString().toLowerCase();
 	}
-	//this is a simple data used to try git
 }

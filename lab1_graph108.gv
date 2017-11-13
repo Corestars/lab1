@@ -1,0 +1,16 @@
+digraph lab1_graph108
+{
+    to -> explore [label="1",color=black]
+    to -> seek [label="1",color=black]
+    explore -> strange [label="1",color=black]
+    strange -> new [label="1",color=black]
+    new -> life [label="1",color=black]
+    new -> worlds [label="1",color=black]
+    new -> civilizations [label="1",color=black]
+    worlds -> to [label="1",color=black]
+    seek -> out [label="1",color=black]
+    out -> new [label="1",color=black]
+    life -> and [label="1",color=black]
+    and -> new [label="1",color=black]
+}
+

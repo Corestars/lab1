@@ -1,5 +1,8 @@
 package lab1;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 
@@ -7,6 +10,18 @@ public class RandomWalkThread extends Thread
 {
 	public void run()
 	{
+		PrintWriter writer;
+			try {
+				writer = new PrintWriter("RandomWalk", "UTF-8");
+			} catch (FileNotFoundException e) {
+				System.out.println("File Not Found.");
+				return;
+			} catch (UnsupportedEncodingException e) {
+				
+				System.out.println("Coding not support.");
+				return;
+			}
+
 		int numbers=Main.graph.indexof.size();
 		int map_list[][]=new int[numbers][numbers];
 		int map_finding[][]=new int[numbers][numbers];
@@ -17,6 +32,7 @@ public class RandomWalkThread extends Thread
 			{
 				if(RandomWalk.running==false)
 				{
+					writer.close();
 					return;
 				}	
 				map_list[g][q]=0;
@@ -28,6 +44,7 @@ public class RandomWalkThread extends Thread
 			{
 				if(RandomWalk.running==false)
 				{
+					writer.close();
 					return;
 				}	
 				map_finding[g][q]=0;
@@ -42,6 +59,7 @@ public class RandomWalkThread extends Thread
 			{
 				if(RandomWalk.running==false)
 				{
+					writer.close();
 					return;
 				}
 				map_finding[i.getKey()][j.index]=1;
@@ -57,7 +75,8 @@ public class RandomWalkThread extends Thread
 					{
 					   if(RandomWalk.running==false)
 						{
-							return;
+							writer.close();
+						   return;
 						}
 					   //System.out.println(Main.graph.wordof.get(g)+"-"+Main.graph.wordof.get(q));
 						cost++;
@@ -67,13 +86,15 @@ public class RandomWalkThread extends Thread
 			//System.out.println(map_cost[g]);
 		}
 		int key=(int) (numbers*Math.random());
-		System.out.println(key);
+		//System.out.println(key);
 		while(RandomWalk.running)
 		{			
+			
 			int endnum=(int) (100*Math.random());
 			if(map_cost[key]==0)
 			{
 				RandomWalk.running=false;
+
 			}
 			else if(map_cost[key]==1)
 			{
@@ -82,7 +103,7 @@ public class RandomWalkThread extends Thread
 			else
 			{
 				endnum=endnum%map_cost[key];
-			}
+			}			
 			//System.out.println(map_cost[key]);
 		   //System.out.println(endnum);
 			for(int t=0;t<numbers;t++)
@@ -102,7 +123,9 @@ public class RandomWalkThread extends Thread
 			    	else
 			    	{
 				    	map_list[key][t]=1;
-				    	System.out.println(Main.graph.wordof.get(key)+"-"+Main.graph.wordof.get(t));
+				    	String tt=Main.graph.wordof.get(key)+"-"+Main.graph.wordof.get(t);
+				    	System.out.println(tt);
+				    	writer.println(tt);
 				    	key=t;
 				    	
 			    	}
@@ -143,6 +166,7 @@ public class RandomWalkThread extends Thread
 			}
 		}*/
 		//System.out.println("orz");
+		writer.close();
 		return;
 		//System.out.println();
 	}
